@@ -59,7 +59,7 @@ if(!email || !password){
             },          
         },
         process.env.ACCESS_TOKEN_SECRET,
-        {expiresIn: "1m"}
+        {expiresIn: "15m"}
     );
     res.status(200).json(accessToken)
      //res.status(200).json(user.email)

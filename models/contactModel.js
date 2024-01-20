@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const contactSchema = new mongoose.Schema({
     user_id: {
          type: mongoose.Schema.Types.ObjectId,
-         requires:true,
+         required:true,
          ref: "User",
     },
 

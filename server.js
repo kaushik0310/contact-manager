@@ -15,6 +15,11 @@ app.use(("/api/contacts"), require("./routes/contactRoutes"));
 app.use(("/api/users"), require("./routes/userRoutes"));
 app.use(errorHandler);
 
+
 app.listen(port,()=>{
     console.log(`port connected to the server ${port}`);
+    // const token = "Bearer absvhdgfk j1262 kkj";
+    // const result = token.split(" ")[3];
+    // console.log(result);
+
 })
