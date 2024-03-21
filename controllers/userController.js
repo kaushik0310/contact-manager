@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const asyncHandler = require("express-async-handler");
 const jwt = require("jsonwebtoken");
 const User = require("../models/userModel")
+//const validator = require("validator") 
 
 //@desc register user
 //@route POST/api/users/register
@@ -13,28 +14,29 @@ const registerUser =asyncHandler( async(req,res)=>{
         res.status(400);
         throw new Error("all fields are mandatory");
     }
-    userAvailable =await User.findOne({email});
+  const  userAvailable =await User.findOne({email});
     if(userAvailable){
         res.status(400);
         throw new Error("user already registered");
     }
-// hashing the password
+// hashing the password 
 const hashedPassword = await bcrypt.hash(password, 10);
 console.log("Hashed Password: ", hashedPassword);
     const user =await User.create({
         username,
-        email,
+        email, 
         password: hashedPassword,
     })
+console.log("registered user is :", user);
 
-    console.log(`registered user is ${user}`);
 if(user){
-    res.status(201).json({_id: user.id, email: user.email});
+    res.status(201).json({_id: user._id, mail: user.email});
     //res.json({message: "Register the user"});
 }else
-    res.status(400).json("User data is not valid")
+    res.status(400);
+    throw new Error("User data is not valid");
     //res.json({message: "Register the user"});
-   
+   //user is not valid ,this validation is not working
 }); 
 
 //@desc login user
@@ -50,20 +52,19 @@ if(!email || !password){
    //compare password with hashed password
    if(user && (await bcrypt.compare(password,user.password)))
    {
-    const accessToken = jwt.sign(
-        {
-            user:{
-                username: user.username,
-                email: user.email,
-                id: user.id
-            },          
+    //   const accessToken=jwt.sign({id:user.id},process.env.ACCESS_TOKEN_SECRET,{expiresIn:"7d"})
+    //   res.status(200).json({accessToken,user})
+
+    const accessToken = jwt.sign({
+        id1: user.email
+        //id1:user._id
         },
         process.env.ACCESS_TOKEN_SECRET,
-        {expiresIn: "15m"}
-    );
-    res.status(200).json(accessToken)
-     //res.status(200).json(user.email)
-    //res.status(200).json({message:"login successful"})
+        {expiresIn: "7d"}
+                                 );
+
+    res.status(200).json({token:accessToken,user})
+
    }
    else{
         res.status(401);

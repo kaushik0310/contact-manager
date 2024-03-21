@@ -5,29 +5,33 @@ const Contact=  require("../models/contactModel");
 //@access private
 
 const getContacts =asyncHandler( async(req,res)=>{ 
-    const contacts =await Contact.find({user_id: req.user.id});
+    const contacts =await Contact.find({user_id: req.user1._id});
     res.status(200).json(contacts)
     //res.status(200).json({message: "get all contacts"})
 }); 
 
 //@desc create contacts
-//@route POST/api/contacts
+//@route POST/api/contacts 
 //@access private
 
 const createContact =asyncHandler( async(req,res)=>{
-    console.log("the request body is :",req.body);
     const {name, email, phone} = req.body;
+    console.log("check3")
     if (!name || !email || !phone) {
         res.status(400);
         throw new Error("All fields are mandatory !");
     }
+
+   console.log("user is",req.user1)
+    
     const contact = await Contact.create({
         name,
         email,
         phone,
-        user_id: req.user.id
+        user_id: req.user1._id
+        //user_id: req.user1
     })
-    res.status(200).json(contact)
+    res.status(201).json(contact)
     //res.status(200).json({message: "create contact"})
 })
 
@@ -41,10 +45,7 @@ const getContact =asyncHandler ( async(req,res)=>{
         res.status(404);
         throw new Error("contact not found")
     }
-    if (contact.user_id.toString() !== req.user.id) {
-        res.status(403);
-        throw new Error("user dont have permission to update other user request");
-    }
+      
     res.status(200).json(contact)
     //res.status(200).json({message: `get contact for id ${req.params.id}` })
 })
@@ -59,9 +60,9 @@ const updateContact =asyncHandler( async(req,res)=>{
         res.status(404);
         throw new Error("contact not found")
     }
-    if (contact.user_id.toString() !== req.user.id) {
+    if (contact.user_id.toString() !== req.user1._id.toString()) {
         res.status(403);
-        throw new Error("user dont have permission to update other user request");
+        throw new Error("user do not have permission to update other user request");
     }
     const updatedContact = await Contact.findByIdAndUpdate(
         req.params.id,
